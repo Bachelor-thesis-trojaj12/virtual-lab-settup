@@ -1,0 +1,26 @@
+---
+- name: start FW
+  systemd:
+    name: firewalld
+    state: started
+
+- name: enable FW
+  systemd:
+    name: firewalld
+    enabled: yes
+
+- name: Open TCP ports on workers
+  firewalld:
+    port: "{{item}}/tcp"
+    permanent: yes
+    immediate: yes
+    state: enabled
+  loop: "{{FW.tcp_open}}"
+
+- name: Open UDP ports on workers
+  firewalld:
+    port: "{{item}}/udp"
+    permanent: yes
+    immediate: yes
+    state: enabled
+  loop: "{{FW.udp_open}}"

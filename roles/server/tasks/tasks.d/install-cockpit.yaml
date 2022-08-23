@@ -1,0 +1,17 @@
+
+---
+- name: install cockpit
+  package:
+    name: cockpit
+    update_cache: yes
+    state: latest
+
+- name: start cockpit
+  systemd:
+    name: cockpit
+    state: started
+
+- name: enable cockpit
+  systemd:
+    name: cockpit
+    enabled: yes

@@ -1,0 +1,11 @@
+- hosts: master
+  become: true
+  tasks:
+  - name: Allow user to read k8s admin conf
+    loop: ["kube"]
+    ansible.posix.acl:
+      path: /etc/kubernetes/admin.conf
+      entity: kube
+      etype: user
+      permissions: r
+      state: present

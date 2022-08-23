@@ -1,0 +1,25 @@
+- name: write repo information in kube repo file (debian)
+  fail:
+    msg: not implemented for debain based OSes
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: write repo information in kube repo file (red-hat)
+  copy:
+    dest: "/etc/yum.repos.d/kubernetes.repo"
+    content: |
+      [kubernetes]
+      name=Kubernetes
+      baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-\$basearch
+      enabled=1
+      gpgcheck=0
+      repo_gpgcheck=0
+      gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: Install K8S tools 
+  loop: ["kubectl","kubeadm","kubelet"]
+  package:
+    name: "{{item}}"
+    update_cache: yes
+    state: latest
+  when: true

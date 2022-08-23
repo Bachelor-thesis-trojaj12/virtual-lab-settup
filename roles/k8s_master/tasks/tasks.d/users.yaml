@@ -1,0 +1,50 @@
+- name: Add user {{item.name}}
+  loop: "{{USERS}}"
+  user:
+    name: "{{item.name}}"
+    generate_ssh_key: no
+    password: "{{ item.password | default(item.name) | password_hash('sha512') }}"
+    append: yes
+    groups: "{{ item.groups | default([]) }}"
+    shell: /bin/bash
+
+- name: Add user to sudoers
+  loop: "{{USERS}}"
+  when: item.sudoers is defined
+  community.general.sudoers:
+    name: "{{item.name}}"
+    user: "{{item.name}}"
+    commands: "{{item.sudoers}}"
+    runas: ALL
+    nopassword: yes
+
+- name: autocomplete kubecomplete
+  loop: "{{USERS}}"
+  when: item.kubecomplete is defined and item.kubecomplete is true
+  become: true
+  become_user: "{{item.name}}"
+  lineinfile:
+    path: ~/.bashrc
+    create: true
+    line: source <(kubectl completion bash)
+
+- name: Create a ~/.kube directory
+  loop: "{{USERS}}"
+  become: true
+  become_user: "{{item.name}}"
+  file:
+    path: ~/.kube
+    state: directory
+    mode: '0744'
+
+- name: Create link to kubeconf
+  loop: "{{USERS}}"
+  become: true
+  become_user: "{{item.name}}"
+  file:
+    dest: ~/.kube/config
+    src: /etc/kubernetes/admin.conf
+    force: true
+    follow: false
+    state: link
+    mode: '0744'

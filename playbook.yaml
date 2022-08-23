@@ -1,0 +1,34 @@
+---
+- hosts: all
+  become: true
+  pre_tasks:
+  - name: update repository index (CentOS)
+    tags: always
+    dnf:
+      update_cache: yes
+    changed_when: false
+    when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+  - name: update repository index (Ubuntu)
+    tags: always
+    apt:
+      update_cache: yes
+    changed_when: false
+    when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- hosts: all
+  become: true
+  roles:
+    - server
+
+- hosts: master
+  become: true
+  roles:
+    - k8s_node
+    - k8s_master
+
+- hosts: worker
+  become: true
+  roles:
+    - k8s_node
+

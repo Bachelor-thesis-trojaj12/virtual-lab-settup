@@ -1,0 +1,3 @@
+FW:
+  tcp_open: ["9090"]
+  udp_open: []

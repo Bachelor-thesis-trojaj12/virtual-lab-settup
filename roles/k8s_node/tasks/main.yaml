@@ -1,0 +1,4 @@
+---
+- include_tasks: ./tasks.d/disable-swap.yaml
+- include_tasks: ./tasks.d/install-containerd.yaml
+- include_tasks: ./tasks.d/install-k8s.yaml
