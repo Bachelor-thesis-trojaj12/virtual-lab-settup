@@ -23,3 +23,13 @@
     update_cache: yes
     state: latest
   when: true
+
+- name: Enable kubelet
+  systemd:
+    name: kubelet
+    enabled: true
+
+- name: Start kubelet
+  systemd:
+    name: kubelet
+    state: started

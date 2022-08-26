@@ -1,2 +1,3 @@
 ---
 - include_tasks: ./tasks.d/users.yaml
+- include_tasks: ./tasks.d/configure-firewall.yaml

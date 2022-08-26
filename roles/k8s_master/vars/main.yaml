@@ -3,3 +3,6 @@ USERS:
   - name: kube
     sudoers: ["/usr/bin/kubeadm", "/usr/bin/kubectl", "/usr/bin/kubelet"]
     kubecomplete: true
+FW:
+  tcp_open: ["6443","10250"]
+  udp_open: []
