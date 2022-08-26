@@ -52,24 +52,37 @@
       name: "{{item}}"
       update_cache: yes
       state: latest
-- name: Check that the containerd is configured
-  stat:
-    path: /etc/file.txt
-  register: stat_result
+
+- name: Create a directory if it does not exist
+  ansible.builtin.file:
+    path: /etc/containerd
+    state: directory
+    mode: '0755'
 
 - name: config containerd
   become: true
   shell: |
-    mkdir -p /etc/containerd
     containerd config default | sudo tee /etc/containerd/config.toml
   args:
     warn: no
-  when: not stat_result.stat.exists
+  register: foo
+
+- name: trim wihitespaces
+  replace:
+    path: /etc/containerd/config.toml
+    regexp: '^\s*'
+    replace: ''
+
+- name: edit conf file so it uses systemd cgroups
+  community.general.ini_file:  
+    path: /etc/containerd/config.toml
+    section: 'plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options'
+    option: SystemdCgroup
+    value: "true"
+    backup: yes
 
 - name: restart contanerd
   systemd:
     name: containerd
     state: restarted
     daemon_reload: yes
-  when: not stat_result.stat.exists
-      
